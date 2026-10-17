@@ -7,3 +7,5 @@ build
 .env
 *.iml
 z
+.env.*
+!.env.example

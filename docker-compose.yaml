@@ -1,44 +1,35 @@
-
 services:
   db:
-    image: mysql:8.0
-    container_name: cafe-db
+    image: postgres:16
+    container_name: cafe-postgres
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - cafe_mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"
-        ]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 30s
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cafe-api
+    container_name: cafe-backend
     restart: unless-stopped
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    env_file:
+      - .env
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
-  cafe_mysql_data:
+  postgres_data:
