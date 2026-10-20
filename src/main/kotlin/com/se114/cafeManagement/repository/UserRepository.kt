@@ -1,0 +1,8 @@
+package com.se114.cafeManagement.repository
+
+import com.se114.cafeManagement.entity.User
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface UserRepository : JpaRepository<User, Long> {
+    fun findByEmail(email: String): User?
+}
