@@ -2,24 +2,41 @@
 
 ## Project Structure & Module Organization
 
-This is a Kotlin/Spring Boot backend for cafe management. Application code is in `src/main/kotlin/com/se114/cafeManagement`, organized by responsibility: `controller/` exposes REST endpoints, `service/` holds business logic, `repository/` contains Spring Data JPA interfaces, `entity/` maps database tables, `dto/` defines request/response payloads, and `config/` contains application configuration. Runtime settings are in `src/main/resources/application.properties`; tests mirror the package layout under `src/test/kotlin`. Docker files and `.env.example` support local PostgreSQL development.
+This repository is a Kotlin/Spring Boot cafe-management API. Application code is in `src/main/kotlin/com/se114/cafeManagement`:
+
+- `controller/` defines REST endpoints.
+- `service/` contains business rules and transactions.
+- `repository/` holds Spring Data JPA repositories.
+- `entity/` maps PostgreSQL tables.
+- `dto/` contains request and response models, grouped by feature such as `dto/product/`.
+- `config/` contains framework configuration.
+
+Tests mirror production packages under `src/test/kotlin`. Runtime configuration lives in `src/main/resources/application.properties`; Docker files and `.env.example` support local PostgreSQL development.
 
 ## Build, Test, and Development Commands
 
-- `./gradlew bootRun` (or `gradlew.bat bootRun` on Windows) runs the API with JDK 21; provide the datasource environment variables first.
-- `./gradlew build` compiles, tests, and produces the application artifact.
-- `./gradlew test` runs the JUnit 5 test suite.
-- `docker compose up --build` builds and starts the API plus PostgreSQL using `.env`.
-- `docker compose down` stops local services while retaining the database volume.
+- `gradlew.bat bootRun` starts the API on Windows using JDK 21. Set datasource environment variables first.
+- `gradlew.bat build` compiles, runs tests, and creates the application artifact.
+- `gradlew.bat test` runs the JUnit 5 suite.
+- `docker compose up --build` builds and starts the API plus PostgreSQL from `.env`.
+- `docker compose down` stops containers while retaining the database volume.
+
+On macOS/Linux, use `./gradlew` instead of `gradlew.bat`.
 
 ## Coding Style & Naming Conventions
 
-Use Kotlin idioms and four-space indentation, matching the existing source. Keep packages lowercase and classes in PascalCase (`UserService`); functions and properties use camelCase (`createUser`, `passwordHash`). Name DTOs by role, such as `CreateUserRequest` and `UserResponse`. Prefer constructor injection, `@Valid` request validation, and focused controllers that delegate to services. There is no configured formatter or linter, so preserve surrounding formatting and keep imports minimal.
+Use idiomatic Kotlin with four-space indentation and minimal imports. Packages are lowercase; classes use PascalCase (`ProductService`), while functions and properties use camelCase (`createProduct`). Name request/response DTOs by role, for example `CreateCategoryRequest` and `CategoryResponse`.
+
+Use constructor injection, validate incoming bodies with `@Valid`, and keep controllers thin: controllers delegate to services, services own transactions, and repositories only access persistence. No formatter or linter is configured; preserve nearby formatting.
 
 ## Testing Guidelines
 
-Tests use JUnit 5 with Spring Boot test starters. Put tests in the corresponding package under `src/test/kotlin`, name classes `*Tests`, and use descriptive test names such as `createUserRejectsDuplicateEmail`. Run `./gradlew test` before opening a PR. The project has no stated coverage threshold; add regression tests for new behavior and bug fixes.
+Tests use JUnit 5 and Spring Boot test starters. Put a test in the matching package under `src/test/kotlin`, name classes `*Tests`, and use behavior-focused names such as `createProductRejectsMissingCategory`. Add regression tests for every bug fix or new endpoint. Run `gradlew.bat test` before submitting changes. No coverage threshold is currently configured.
 
 ## Commit & Pull Request Guidelines
 
-Recent commits use short, imperative summaries (for example, `generate tables` or `test some basic API`). Keep each commit scoped and describe the user-facing or technical change clearly. PRs should explain the change, list validation performed, link related issues when available, and include API examples or screenshots/logs when endpoint behavior or deployment configuration changes. Never commit `.env`, database credentials, or other secrets.
+Use short, imperative commit subjects, such as `add products categories api` or `test basic API`. Keep commits scoped. Pull requests should explain the change, list validation performed, link relevant issues, and include request/response examples when an endpoint changes.
+
+## Security & Configuration
+
+Never commit `.env`, credentials, or production secrets. Copy `.env.example` for local use and configure production secrets in the deployment environment. Validate client input and do not treat client-provided payment status as trusted.
