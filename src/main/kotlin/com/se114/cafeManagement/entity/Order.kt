@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 enum class OrderSource { STAFF, CUSTOMER_APP }
-enum class OrderStatus { PENDING, SERVED, CANCELLED }
+enum class OrderStatus { PENDING, PREPARING, READY, SERVED, CANCELLED }
 enum class OrderPaymentStatus { UNPAID, PAID, REFUNDED }
 
 @Entity @Table(name = "orders")

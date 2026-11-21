@@ -32,4 +32,8 @@ class CategoryService(
     @Transactional(readOnly = true)
     fun getAllCategories(): List<CategoryResponse> =
         categoryRepository.findAllByOrderBySortOrderAsc().map(CategoryResponse::from)
+
+    @Transactional(readOnly = true)
+    fun getActiveCategories(): List<CategoryResponse> =
+        categoryRepository.findAllByOrderBySortOrderAsc().filter { it.isActive }.map(CategoryResponse::from)
 }

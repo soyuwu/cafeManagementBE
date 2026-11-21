@@ -3,6 +3,7 @@ package com.se114.cafeManagement.service
 import com.se114.cafeManagement.dto.table.CreateTableRequest
 import com.se114.cafeManagement.dto.table.TableResponse
 import com.se114.cafeManagement.entity.CafeTable
+import com.se114.cafeManagement.entity.TableStatus
 import com.se114.cafeManagement.repository.TableRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -31,4 +32,7 @@ class TableService(
 
     @Transactional(readOnly = true)
     fun getAllTables(): List<TableResponse> = tableRepository.findAll().map(TableResponse::from)
+
+    @Transactional(readOnly = true)
+    fun getAvailableTables(): List<TableResponse> = tableRepository.findAllByStatus(TableStatus.AVAILABLE).map(TableResponse::from)
 }
